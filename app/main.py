@@ -1,17 +1,37 @@
-"""BookRoot 서버의 시작 파일. 기능 API는 이후에 추가합니다."""
+"""BookRoot FastAPI 서버의 시작 파일입니다."""
 
-import os
-from pathlib import Path
+from contextlib import asynccontextmanager
 
-from dotenv import load_dotenv
+import httpx
 from fastapi import FastAPI
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from app.api.router import api_router
+from app.clients.data4library import Data4LibraryClient
+from app.core.config import Settings
+from app.services.books import BooksService
+from app.services.loans import LoansService
 
-app = FastAPI(title=os.getenv("APP_NAME", "BookRoot API"))
+
+def create_app(settings: Settings | None = None, transport=None):
+    settings = settings or Settings.from_env()
+
+    @asynccontextmanager
+    async def lifespan(application):
+        async with httpx.AsyncClient(timeout=10, transport=transport) as client:
+            library_api = Data4LibraryClient(client, settings.api_key)
+            application.state.data4library = library_api
+            application.state.books = BooksService(library_api, settings)
+            application.state.loans = LoansService(library_api)
+            yield
+
+    application = FastAPI(title=settings.app_name, version="0.2.0", lifespan=lifespan)
+
+    @application.get("/health", tags=["health"])
+    def health():
+        return {"status": "ok"}
+
+    application.include_router(api_router)
+    return application
 
 
-@app.get("/health")
-def health():
-    """서버가 정상적으로 실행 중인지 확인합니다."""
-    return {"status": "ok"}
+app = create_app()
