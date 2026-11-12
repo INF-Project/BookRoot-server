@@ -19,8 +19,8 @@ app/
   services/
     books.py                  책·대출: 검색·상세 처리
     loans.py                  책·대출: 상태 처리
-    libraries.py              도서관·지도: 소장·구 필터 
-    distance.py               도서관·지도: 직선거리 
+    libraries.py              도서관·지도: 소장·구 필터
+    distance.py               도서관·지도: 직선거리
     cache.py                  공용: 크기·유효기간 제한 캐시
   clients/data4library.py     공동: 정보나루 통신
 web/                          정식 검색·지도·위치·표지 화면
