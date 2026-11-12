@@ -76,6 +76,13 @@ class BooksService:
     def __init__(self, api: Data4LibraryClient, settings: Settings):
         self.api, self.settings = api, settings
         self._searches = TTLCache(max_size=64)
+        self._catalog = None
+
+    def _get_catalog(self):
+        if self._catalog is None:
+            from app.services.catalog import CatalogStore
+            self._catalog = CatalogStore(self.settings.catalog_path)
+        return self._catalog
 
     async def _build_regional_results(self, query, field, district):
         size = self.settings.source_page_size
@@ -99,7 +106,12 @@ class BooksService:
         return [SearchBook(**book.model_dump(), library_count=count)
                 for book, count in zip(unique.values(), counts) if count > 0]
 
-    async def search(self, query, field, district, page, page_size):
+    async def search(self, query, field, district, page, page_size, *, sort="relevance", latitude=None, longitude=None):
+        if self.settings.search_backend == "catalog":
+            return await asyncio.to_thread(self._get_catalog().search, query, field, district, page, page_size,
+                sort=sort, latitude=latitude, longitude=longitude)
+        if sort == "distance":
+            raise HTTPException(422, "책 거리순 검색은 지역 장서 DB 모드에서 이용할 수 있습니다.")
         key = (query, field, district)
         items = self._searches.get(key)
         if items is None:
@@ -115,6 +127,17 @@ class BooksService:
         return BookList(items=items[start:start + page_size], total=len(items), page=page, page_size=page_size)
 
     async def detail(self, isbn13):
+        local = None
+        if self.settings.search_backend == "catalog":
+            local = await asyncio.to_thread(self._get_catalog().get_book, isbn13)
+        try:
+            return await self._source_detail(isbn13)
+        except HTTPException:
+            if local is not None:
+                return local
+            raise
+
+    async def _source_detail(self, isbn13):
         body = await self.api.request("srchDtlList", isbn13=isbn13, loaninfoYN="N")
         details = body.get("detail", [])
         if isinstance(details, dict):

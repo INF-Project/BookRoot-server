@@ -22,7 +22,7 @@ def test_loan_values_preserve_unknown_and_library_leading_zeros(has_book, availa
         data = result.json()
         assert (data["has_book"], data["loan_available"]) == expected
         assert data["library_code"] == "00123"
-        assert data["due_date"] is None and data["remaining_days"] is None
+        assert set(data) == {"isbn13", "library_code", "has_book", "loan_available"}
 
 
 @pytest.mark.parametrize("library_code", ["", "abc", "-1", "123456789012345678901"])

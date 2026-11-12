@@ -14,6 +14,10 @@ class Library(BaseModel):
     latitude: float | None = None
     longitude: float | None = None
     distance_km: float | None = None
+    telephone: str | None = None
+    homepage: str | None = None
+    operating_time: str | None = None
+    closed: str | None = None
 
 
 class LibraryList(BaseModel):

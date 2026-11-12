@@ -26,5 +26,5 @@ class LoansService:
             available = None  # 모순되는 외부 데이터는 대출 가능으로 단정하지 않습니다.
         return Availability(
             isbn13=isbn13, library_code=library_code, has_book=has_book,
-            loan_available=available, due_date=None, remaining_days=None,
+            loan_available=available,
         )

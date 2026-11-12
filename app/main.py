@@ -17,8 +17,10 @@ def create_app(settings: Settings | None = None, transport=None):
 
     @asynccontextmanager
     async def lifespan(application):
-        async with httpx.AsyncClient(timeout=10, transport=transport) as client:
-            library_api = Data4LibraryClient(client, settings.api_key)
+        async with httpx.AsyncClient(timeout=httpx.Timeout(20, connect=5, pool=5), transport=transport) as client:
+            library_api = Data4LibraryClient(client, settings.api_key,
+                request_interval=0 if transport is not None else 0.2,
+                retry_delay=0 if transport is not None else 0.25)
             application.state.data4library = library_api
             application.state.books = BooksService(library_api, settings)
             application.state.loans = LoansService(library_api)

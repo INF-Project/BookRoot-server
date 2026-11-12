@@ -1,0 +1,465 @@
+.map-panel {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: 740px;
+  overflow: hidden;
+  border-left: 1px solid #e8ded8;
+  background-color: #f5f2ed;
+}
+
+/* 지도 배경과 도서관 핀을 같은 좌표계에 배치합니다. */
+.map-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.map-viewport.can-pan {
+  touch-action: none;
+  cursor: grab;
+}
+
+.map-viewport.is-panning {
+  cursor: grabbing;
+}
+
+.map-scene {
+  position: absolute;
+  inset: 0;
+  background: #f5f2ed url("./assets/map.svg") center / 100% 100% no-repeat;
+  transform-origin: center;
+}
+
+.map-panel.show-plain .map-scene {
+  background-image: none;
+}
+
+.map-title {
+  position: absolute;
+  top: 5.8%;
+  left: 7.8%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.map-title strong,
+.map-title span {
+  display: block;
+  line-height: 1.2;
+}
+
+.map-title strong {
+  margin-bottom: 9px;
+  color: #b99898;
+  font-size: clamp(24px, 3.15vw, 50px);
+  font-weight: 850;
+  letter-spacing: .01em;
+  opacity: .24;
+}
+
+.map-title span {
+  color: #776b65;
+  font-size: clamp(10px, 1.12vw, 18px);
+  font-weight: 650;
+  letter-spacing: .05em;
+  opacity: .4;
+}
+
+/* 핀의 색과 아이콘으로 도서관별 대출 상태를 표시합니다. */
+.map-pin {
+  --pin-bg: #27782e;
+  --pin-ink: #276c32;
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.map-pin[data-status="borrowed"] {
+  --pin-bg: #e07c00;
+  --pin-ink: #a45406;
+}
+
+.map-pin[data-status="unavailable"] {
+  --pin-bg: #c43c0b;
+  --pin-ink: #ad3508;
+}
+
+.map-pin[data-status="unknown"] {
+  --pin-bg: #746c65;
+  --pin-ink: #59514b;
+}
+
+.map-pin:is(:hover, :focus-visible) {
+  z-index: 3;
+}
+
+.pin-label {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  padding: 5px 11px;
+  transform: translateX(-50%);
+  border: 1px solid #ecece3;
+  border-radius: 12px;
+  background: #fffefa;
+  color: #181513;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px #42372d21;
+}
+
+.pin-label :is(strong, em, small, .pin-status) {
+  margin-inline-start: 4px;
+  color: var(--pin-ink);
+  font-size: inherit;
+  font-style: normal;
+}
+
+.pin-symbol {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--pin-bg);
+  color: #fff;
+  font-size: 19px;
+  line-height: 1;
+  box-shadow: 0 3px 6px #33271f36;
+}
+
+.pin-symbol svg {
+  width: 23px;
+  height: 23px;
+}
+
+.map-pin:is(.is-selected, .selected, [aria-pressed="true"]) {
+  z-index: 4;
+  width: 54px;
+  height: 54px;
+}
+
+.map-pin:is(.is-selected, .selected, [aria-pressed="true"]) .pin-label {
+  visibility: hidden;
+}
+
+.map-pin:is(.is-selected, .selected, [aria-pressed="true"]) .pin-symbol {
+  width: 54px;
+  height: 54px;
+  background: #176924;
+  outline: 5px solid #1769244d;
+}
+
+.map-pin:is(.is-selected, .selected, [aria-pressed="true"]) .pin-symbol::after {
+  position: absolute;
+  bottom: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: 8px solid #145c20;
+  border-inline: 8px solid transparent;
+  content: "";
+}
+
+.map-pin:is(.is-selected, .selected, [aria-pressed="true"]) .pin-symbol svg {
+  width: 29px;
+  height: 29px;
+}
+
+.map-user {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  transform: translate(-50%, -50%);
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #2a68ed;
+  box-shadow: 0 0 0 4px #2a68ed66, 0 0 0 13px #2a68ed30;
+  pointer-events: none;
+}
+
+.map-user span {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 50%;
+  padding: 4px 9px;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  background: #453b36;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px #33271f26;
+}
+
+/* 선택된 도서관의 소장 위치와 길찾기 링크를 핀 위에 표시합니다. */
+.map-popup {
+  position: absolute;
+  z-index: 5;
+  --popup-half-width: min(160px, 37%);
+  left: clamp(calc(var(--popup-half-width) + 8px), var(--pin-x), calc(100% - var(--popup-half-width) - 8px));
+  width: calc(2 * var(--popup-half-width));
+  padding: 16px;
+  transform: translate(-50%, calc(-100% - 38px));
+  border: 2px solid #14651d;
+  border-radius: 20px;
+  background: #fff;
+  color: #151311;
+  font-size: 15px;
+  box-shadow: 0 10px 21px #293b2526;
+  pointer-events: none;
+}
+
+.map-popup.is-at-top {
+  transform: translate(-50%, 44px);
+}
+
+.map-popup-header,
+.map-popup-detail > div,
+.map-popup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.map-popup-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ece8e4;
+}
+
+.map-popup-header :is(h2, h3, h4, strong) {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.map-popup-header :is(.status-badge, .map-popup-badge) {
+  border-radius: 999px;
+  padding: 3px 9px;
+  background-color: #e8f4e8;
+  color: #156723;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.map-popup-detail {
+  display: grid;
+  gap: 8px;
+  padding-block: 12px 14px;
+  color: #776b65;
+}
+
+.map-popup-detail strong {
+  color: #191512;
+}
+
+.map-popup-detail code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fbf0eb;
+  color: #542b1a;
+  font-size: inherit;
+  font-weight: 750;
+}
+
+.map-popup-footer {
+  padding-top: 10px;
+  border-top: 1px solid #ece8e4;
+  color: #176924;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.map-directions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid #145d1e;
+  border-radius: 10px;
+  background: #176924;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.35;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.map-directions:hover {
+  background-color: #115219;
+}
+
+.map-directions svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 배경 전환, 내 위치 이동, 확대·축소 버튼을 지도 위에 고정합니다. */
+.map-controls {
+  position: absolute;
+  z-index: 6;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.map-controls > button,
+.zoom-controls {
+  overflow: hidden;
+  border: 1px solid #e5ddd6;
+  border-radius: 16px;
+  background-color: #fff;
+  box-shadow: 0 3px 7px #30241a24;
+}
+
+.map-controls button {
+  display: grid;
+  place-items: center;
+  width: 51px;
+  height: 50px;
+  padding: 0;
+  color: #1a1715;
+  font: inherit;
+  cursor: pointer;
+}
+
+.map-controls > button {
+  height: 59px;
+}
+
+.map-controls button:not(:disabled):hover {
+  background-color: #f4f7f1;
+}
+
+.map-controls button:disabled {
+  color: #827772;
+  cursor: default;
+}
+
+.map-controls button svg {
+  width: 23px;
+  height: 23px;
+}
+
+.map-controls > :nth-child(2) {
+  color: #14651d;
+}
+
+.zoom-controls button {
+  border: 0;
+  background: none;
+  font-size: 26px;
+}
+
+.zoom-controls button + button {
+  border-top: 1px solid #ece7e1;
+}
+
+.map-note {
+  position: absolute;
+  z-index: 6;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(720px, calc(100% - 40px));
+  padding: 11px 22px;
+  border-radius: 15px;
+  background: #4c423e;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.65;
+  box-shadow: 0 4px 13px #2416103b;
+}
+
+.map-note svg {
+  flex: 0 0 21px;
+  width: 21px;
+  height: 21px;
+  color: #ffd450;
+}
+
+@media (max-width: 760px) {
+  .map-panel {
+    min-height: 560px;
+    border-top: 1px solid #e8ded8;
+    border-left: 0;
+  }
+
+  .map-controls {
+    top: 12px;
+    right: 12px;
+    gap: 6px;
+  }
+
+  .map-controls button {
+    width: 41px;
+    height: 41px;
+  }
+
+  .map-popup {
+    --popup-half-width: min(132px, 37%);
+    padding: 10px 11px;
+    font-size: 13px;
+  }
+
+  .map-popup.is-near-top {
+    transform: translate(-50%, 39px);
+  }
+
+  .map-popup-header :is(h2, h3, h4, strong) {
+    font-size: 16px;
+  }
+
+  .map-popup-header :is(.status-badge, .map-popup-badge),
+  .map-popup-footer {
+    font-size: 11px;
+  }
+
+  .pin-label {
+    bottom: calc(100% + 2px);
+    padding-inline: 6px;
+    font-size: 10px;
+  }
+
+  .pin-symbol {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pin-symbol svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .map-note {
+    bottom: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+    padding: 9px 11px;
+    font-size: 11px;
+  }
+}

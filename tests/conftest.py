@@ -34,6 +34,7 @@ class FakeAPI:
 
 @contextmanager
 def client_for(rows=(), holdings=None, **settings):
+    settings.setdefault("search_backend", "remote")
     fake = FakeAPI(list(rows), holdings or {})
     with TestClient(create_app(Settings(api_key="test-secret", **settings), httpx.MockTransport(fake))) as client:
         yield client, fake

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fcf6f4">
+  <meta name="description" content="대전광역시 공공도서관의 도서 소장 정보와 대출 상태를 확인하세요.">
+  <title>BookRoot | 대전 공공도서관 통합 검색</title>
+  <link rel="icon" href="./assets/bookroot-logo.png" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./map.css">
+  <link rel="stylesheet" href="./connection.css?v=20261112-list-covers-1">
+</head>
+<body>
+  <div id="app"></div>
+  <dialog id="info-dialog" aria-labelledby="info-title">
+    <div class="dialog-heading">
+      <h2 id="info-title"></h2>
+      <form method="dialog"><button type="submit" class="dialog-close" aria-label="닫기">×</button></form>
+    </div>
+    <div id="info-content"></div>
+  </dialog>
+  <dialog id="cover-dialog" class="cover-dialog" aria-labelledby="cover-title">
+    <div class="dialog-heading">
+      <h2 id="cover-title">책 표지</h2>
+      <form method="dialog"><button type="submit" class="dialog-close" aria-label="표지 닫기" autofocus>×</button></form>
+    </div>
+    <div class="cover-preview-content" data-cover-content></div>
+  </dialog>
+  <dialog id="holding-dialog" class="holding-dialog" aria-labelledby="holding-title" aria-describedby="holding-note">
+    <div class="dialog-heading">
+      <h2 id="holding-title">소장·대출 정보</h2>
+      <form method="dialog"><button type="submit" class="dialog-close" aria-label="소장 정보 닫기" autofocus>×</button></form>
+    </div>
+    <section class="holding-book-info" aria-label="선택한 도서">
+      <h3 data-holding-field="title"></h3>
+      <dl class="holding-book-meta">
+        <div><dt>저자</dt><dd data-holding-field="author"></dd></div>
+        <div><dt>출판사</dt><dd data-holding-field="publisher"></dd></div>
+        <div><dt>출판연도</dt><dd data-holding-field="year"></dd></div>
+        <div><dt>ISBN</dt><dd data-holding-field="isbn"></dd></div>
+      </dl>
+    </section>
+    <p id="holding-note" class="holding-note">도서관 단위로 조회한 정보입니다. 소장본별 청구기호·등록번호·반납 예정일은 현재 미제공입니다.</p>
+    <div class="holding-table-wrap" role="region" aria-label="소장·대출 정보 표" tabindex="0">
+      <table class="holding-info-table">
+        <caption>선택한 도서관의 조회 정보</caption>
+        <thead><tr><th scope="col">소장처 / 자료실 / 서가</th><th scope="col">청구기호</th><th scope="col">등록번호</th><th scope="col">대출 가능 여부</th><th scope="col">반납 예정일</th><th scope="col">잔여 기간</th></tr></thead>
+        <tbody><tr>
+          <th scope="row"><strong data-holding-field="library"></strong><small data-holding-field="address"></small><small><span data-holding-field="room"></span> / <span data-holding-field="shelf"></span></small></th>
+          <td data-holding-field="callNumber"></td><td data-holding-field="registration"></td>
+          <td><span class="status-chip" data-holding-status role="status" aria-live="polite"></span></td>
+          <td class="holding-unprovided">미제공</td><td class="holding-unprovided">미제공</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p class="holding-source-note">대출 가능 여부는 정보나루의 전날 기준으로 실제와 다를 수 있습니다. 대출 불가가 항상 대출 중을 뜻하지는 않습니다.</p>
+    <p class="holding-error" data-holding-error role="status" hidden></p>
+    <div class="holding-dialog-actions">
+      <a class="holding-official-link" data-holding-official target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">공식 사이트에서 예정일·예약 확인 ↗</a>
+      <form method="dialog"><button type="submit" class="holding-close-button">닫기</button></form>
+    </div>
+  </dialog>
+  <script type="module" src="./app.js?v=20261112-list-covers-1"></script>
+</body>
+</html>

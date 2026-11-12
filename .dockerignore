@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+.venv
+work
+**/__pycache__
+**/*.pyc
+**/*-wal
+**/*-shm
+tests

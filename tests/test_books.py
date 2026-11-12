@@ -62,6 +62,18 @@ def test_invalid_input_is_422_without_external_requests(params):
         assert fake.requests == []
 
 
+@pytest.mark.parametrize("params",[
+    {"latitude":36.35},{"longitude":127.38},{"sort":"distance"},
+    {"sort":"distance","latitude":36.35,"longitude":127.38},
+    {"latitude":"NaN","longitude":127.38},{"latitude":36.35,"longitude":"Infinity"},
+    {"sort":"bad"},
+])
+def test_distance_input_and_remote_mode_never_trigger_partial_distance_results(params):
+    with client_for() as (client,fake):
+        assert search(client,**params).status_code==422
+        assert fake.requests==[]
+
+
 def test_broad_search_is_rejected_without_fabricating_totals():
     with client_for([book(1), book(2)], max_search_candidates=1) as (client, fake):
         result = search(client)
@@ -97,7 +109,7 @@ def test_detail_missing_and_malformed(payload, status):
 
 
 def test_health_without_key_and_missing_key_error():
-    with TestClient(create_app(Settings())) as client:
+    with TestClient(create_app(Settings(search_backend="remote"))) as client:
         assert client.get("/health").json() == {"status": "ok"}
         assert client.get("/docs").status_code == 200
         assert search(client).status_code == 503
@@ -117,7 +129,7 @@ def test_external_errors_have_safe_default_detail(failure, expected):
         if failure == "missing_total":
             return httpx.Response(200, json={"response": {"docs": []}})
         return httpx.Response(200, json={"response": {"numFound": 1, "docs": []}})
-    with TestClient(create_app(Settings(api_key="test-secret"), httpx.MockTransport(handler))) as client:
+    with TestClient(create_app(Settings(api_key="test-secret", search_backend="remote"), httpx.MockTransport(handler))) as client:
         result = search(client)
         assert result.status_code == expected and "detail" in result.json()
         assert "test-secret" not in result.text and "authKey" not in result.text
@@ -128,7 +140,7 @@ def test_regional_lookup_failure_is_not_a_false_empty_result():
         if request.url.path.endswith("srchBooks"):
             return httpx.Response(200, json={"response": {"numFound": 1, "docs": [{"doc": book(1)}]}})
         return httpx.Response(500)
-    with TestClient(create_app(Settings(api_key="test-secret"), httpx.MockTransport(handler))) as client:
+    with TestClient(create_app(Settings(api_key="test-secret", search_backend="remote"), httpx.MockTransport(handler))) as client:
         assert search(client).status_code == 502
 
 
@@ -136,7 +148,7 @@ def test_whole_search_has_a_deadline():
     async def handler(request):
         await asyncio.sleep(0.1)
         return httpx.Response(200, json={"response": {"numFound": 0, "docs": []}})
-    settings = Settings(api_key="test-secret", search_timeout_seconds=0.01)
+    settings = Settings(api_key="test-secret", search_timeout_seconds=0.01, search_backend="remote")
     with TestClient(create_app(settings, httpx.MockTransport(handler))) as client:
         assert search(client).status_code == 504
 
