@@ -1,7 +1,7 @@
 # BookRoot Server
 
 BookRoot 팀의 Python + FastAPI 서버 저장소입니다.
-현재는 개발 환경과 서버 실행 확인만 구성했습니다. 도서 검색·지도·대출 기능과 데이터베이스는 아직 추가하지 않았습니다.
+대전 도서관·소장 목록, 구 필터, 직선거리 정렬을 구현했습니다. 도서 검색·대출 기능과 데이터베이스는 아직 추가하지 않았습니다.
 
 ## 개발 환경
 
@@ -77,3 +77,7 @@ git push -u origin feature/book-search
 
 수정한 README나 requirements.txt가 있다면 해당 파일도 `git add`에 포함합니다.
 GitHub에서 Pull Request를 열어 팀원 확인 후 main에 합칩니다.
+
+## 도서관 백엔드
+
+실행 및 프런트 연동은 [docs/LIBRARIES.md](docs/LIBRARIES.md)를 참고하세요. 화면은 제공하지 않습니다.

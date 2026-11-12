@@ -1,17 +1,15 @@
-"""BookRoot 서버의 시작 파일. 기능 API는 이후에 추가합니다."""
-
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
+"""BookRoot 백엔드 시작점. 화면은 프런트엔드에서 제공합니다."""
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import APP_NAME, CORS_ORIGINS
+from app.api.router import api_router
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
-
-app = FastAPI(title=os.getenv("APP_NAME", "BookRoot API"))
-
+app = FastAPI(title=APP_NAME)
+if CORS_ORIGINS:
+    app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS,
+                       allow_methods=["GET"], allow_headers=["Accept", "Content-Type"])
+app.include_router(api_router)
 
 @app.get("/health")
 def health():
-    """서버가 정상적으로 실행 중인지 확인합니다."""
     return {"status": "ok"}
