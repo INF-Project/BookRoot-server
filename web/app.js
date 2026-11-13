@@ -1,7 +1,7 @@
 import { getDistricts, searchBooks } from './api.js?v=20261112-list-covers-1';
 import { CATALOG_SNAPSHOT_LABEL } from './config.js?v=20261112-catalog-2';
-import { connectMap, hasMapPoint, mapMarkup, refreshMap, renderMapPins, updateMapLocationDisplay } from './map.js?v=20261113-status-source-1';
-import { distance, escapeHTML as h, icon, statusIcons, statusText, webURL } from './ui.js?v=20261113-status-source-1';
+import { connectMap, hasMapPoint, mapMarkup, refreshMap, renderMapPins, updateMapLocationDisplay } from './map.js?v=20261113-ui-restore-1';
+import { distance, escapeHTML as h, icon, statusIcons, statusText, webURL } from './ui.js?v=20261113-ui-restore-1';
 import { officialBookLink } from './official-library.js?v=20261112-official-book-link-2';
 
 const app = document.querySelector('#app');
@@ -193,7 +193,6 @@ function libraryCard(holding) {
   const status = holding.status;
   const directions = webURL(holding.directionsUrl);
   const shelf = webURL(holding.shelfUrl);
-  const official = route.isbn13 ? officialBookLink(route.isbn13, data?.book?.title, holding) : null;
   const phone = holding.phone?.replace(/[^+\d]/g, '');
   const title = h(holding.name);
   const statusChip = holding.statusLoading ? `<span class="status-chip" data-status="unknown">${icon('clock',16)} 확인 중</span>` : status ? `<span class="status-chip" data-status="${h(status)}">
@@ -229,7 +228,6 @@ function libraryCard(holding) {
     ${selected && webURL(holding.homepage) ? `<p class="library-contact"><a href="${webURL(holding.homepage)}" target="_blank" rel="noopener noreferrer">도서관 홈페이지 ↗</a></p>` : ''}
     ${phone ? `<div class="library-contact"><a href="tel:${h(phone)}">${icon('phone', 15)} ${h(holding.phone)} 문의</a></div>` : ''}
     ${route.isbn13 ? `<div class="official-book-action">
-      ${official ? `<a class="holding-card-button" href="${official.href}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">공식 사이트에서 현재 상태 확인 ↗</a>` : ''}
       <button type="button" class="holding-card-button" data-holding-open="${h(holding.id)}" aria-haspopup="dialog" aria-controls="holding-dialog"
         aria-label="${title} 소장·대출 정보 보기">소장·대출 정보 보기 ${icon('info',16)}</button>
     </div>` : ''}
@@ -263,7 +261,7 @@ function mapTitle() {
 
 function results() {
   return `<div class="results-searchbar">${searchForm(true)}</div>
-    <p class="catalog-source-note">장서 목록은 ${h(CATALOG_SNAPSHOT_LABEL)} 공개 자료입니다. 각 도서관의 ‘소장·대출 정보 보기’에서 조회 정보를 확인하세요. 현재 대출 상태는 공식 도서관 사이트를 우선 확인하세요. 아래 정보나루 상태는 전날 기준 참고 정보이며 실제와 다를 수 있습니다.</p>
+    <p class="catalog-source-note">장서 목록은 ${h(CATALOG_SNAPSHOT_LABEL)} 공개 자료입니다. 각 도서관의 ‘소장·대출 정보 보기’에서 조회 정보를 확인하세요. 대출 가능 여부는 전날 기준이며 반납 예정일·등록번호·서가 정보는 현재 미제공입니다.</p>
     <main id="main" class="results-main">
       <section class="results-sidebar" aria-label="도서 및 소장 도서관">
         <div class="results-summary">
@@ -272,7 +270,7 @@ function results() {
             <span class="holdings-count" aria-live="polite"></span>
           </div>
           <div class="holdings-toolbar">
-            ${route.query ? `<button type="button" class="available-toggle" data-available aria-pressed="false">${icon('check', 15)} 정보나루 가능만 보기 (전날)</button>` : ''}
+            ${route.query ? `<button type="button" class="available-toggle" data-available aria-pressed="false">${icon('check', 15)} 대출 가능만 보기</button>` : ''}
             <label class="library-filter">${icon('search', 16)}
               <input type="search" aria-label="도서관명 검색" placeholder="도서관명 검색" maxlength="100">
             </label>
@@ -310,7 +308,7 @@ function render() {
 
 function bookAvailabilityMarkup(availability) {
   const state=availability?.state || 'loading';
-  const label={available:'정보나루: 대출 가능 · 전날',unavailable:'정보나루: 대출 불가 · 전날',unknown:'대출 여부 미확인',loading:'대출 여부 확인 중'}[state];
+  const label={available:'대출 가능',unavailable:'대출 불가',unknown:'대출 여부 미확인',loading:'대출 여부 확인 중'}[state];
   const status=state==='loading' ? 'unknown' : state;
   let note;
   if(state==='available')note=`${availability.availableLibrary || '선택 지역의 도서관'}에서 가능 · 전날 기준`;

@@ -51,9 +51,9 @@ export const statusIcons = { available: 'checkCircle', borrowed: 'clock', unavai
 
 export function statusText(holding) {
   switch (holding.status) {
-    case 'available': return '정보나루: 대출 가능 · 전날';
-    case 'borrowed': return '정보나루: 대출 중 · 전날';
-    case 'unavailable': return '정보나루: 대출 불가 · 전날';
+    case 'available': return holding.availableCopies > 0 ? `대출 가능 (${holding.availableCopies}권 비치)` : '대출 가능';
+    case 'borrowed': return '대출 중';
+    case 'unavailable': return '대출 불가';
     default: return '상태 확인 불가';
   }
 }

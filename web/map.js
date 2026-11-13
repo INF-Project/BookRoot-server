@@ -1,4 +1,4 @@
-import { distance,escapeHTML as h,icon,statusText,webURL } from './ui.js?v=20261113-status-source-1';
+import { distance,escapeHTML as h,icon,statusText,webURL } from './ui.js?v=20261113-ui-restore-1';
 const panels=new WeakMap(); let sdkPromise;
 
 export function hasMapPoint(item) {

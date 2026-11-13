@@ -144,5 +144,3 @@ FastAPI 기본 형식 `{"detail": "안내 문구"}`를 사용합니다.
 ## 도서관 목록
 
 GET /api/libraries 및 GET /api/libraries/by-book/{isbn13}는 items/total을 반환합니다. district와 쌍으로 입력하는 latitude/longitude를 지원하며, 좌표가 있으면 직선거리순, 없으면 이름순입니다. 거리 미확인 결과는 마지막입니다. telephone, homepage, operating_time, closed는 제공 시에만 표시합니다. 기본 catalog 모드는 검색과 같은 장서 snapshot을 사용하므로 외부 API 한도와 무관하게 소장관을 조회합니다.
-
-화면의 정보나루 대출 상태는 전날 기준 참고 정보입니다. 현재 상태는 공식 사이트 확인 버튼을 우선하며, 공식 사이트의 대출 상태를 자동 수집하거나 조회 결과로 가장하지 않습니다. 직접 연동 API는 아직 확보하지 못했습니다.
