@@ -23,7 +23,14 @@ let districtError = false;
 let location = null;
 let locationState = 'idle';
 let locationError = '';
-const showCovers = new URLSearchParams(window.location.search).get('covers') !== 'off';
+// 표지 비활성화는 로컬 검증에서만 허용합니다. 공유된 시험 주소가 화면을 끄지 않도록 정리합니다.
+const localCoverPreview = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+const coverPageURL = new URL(window.location.href);
+const showCovers = !localCoverPreview || coverPageURL.searchParams.get('covers') !== 'off';
+if (!localCoverPreview && coverPageURL.searchParams.has('covers')) {
+  coverPageURL.searchParams.delete('covers');
+  window.history.replaceState(window.history.state, '', coverPageURL.href);
+}
 let route = readRoute();
 let request;
 let data;
