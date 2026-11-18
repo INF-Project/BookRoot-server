@@ -1,6 +1,6 @@
 import { getDistricts, searchBooks } from './api.js?v=20261112-list-covers-1';
 import { CATALOG_SNAPSHOT_LABEL } from './config.js?v=20261112-catalog-2';
-import { connectMap, hasMapPoint, mapMarkup, refreshMap, renderMapPins, updateMapLocationDisplay } from './map.js?v=20261113-ui-restore-1';
+import { connectMap, hasMapPoint, mapMarkup, refreshMap, renderMapPins, updateMapLocationDisplay } from './map.js?v=20261118-feedback-1';
 import { distance, escapeHTML as h, icon, statusIcons, statusText, webURL } from './ui.js?v=20261113-ui-restore-1';
 import { officialBookLink } from './official-library.js?v=20261112-official-book-link-2';
 
@@ -77,7 +77,7 @@ function searchForm(compact) {
     <label class="search-input-wrap">
       ${compact ? icon('search', 22) : ''}
       <input name="query" type="search" aria-label="도서명, 저자 또는 키워드" maxlength="100" required value="${h(route.query)}"
-        placeholder="${compact ? '도서명 또는 저자 검색' : '도서명 또는 저자, 키워드를 입력해보세요 (예: 불편한 편의점)'}">
+        placeholder="${compact ? '도서명 또는 저자 검색' : '도서명 또는 저자, 키워드를 입력하세요'}">
     </label>
     <button type="submit" class="search-submit">${icon('search', compact ? 18 : 23)} ${compact ? '검색' : '통합 검색'}</button>
   </form>`;

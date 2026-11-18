@@ -40,3 +40,20 @@
 .holding-dialog .holding-error{padding:10px 12px;border:1px solid #e8d9b8;background:#fff5df;color:#80602d;font-size:12px;line-height:1.6}
 .holding-dialog-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px}.holding-official-link{color:#786451;text-decoration:underline;text-underline-offset:3px;font-size:12px;line-height:1.6}.holding-dialog .holding-close-button{padding:10px 24px;border:1px solid #704923;border-radius:7px;background:#704923;color:white;cursor:pointer;font:inherit;font-size:13px}
 @media(max-width:600px){.holding-dialog{padding:16px}.holding-dialog h2{font-size:20px}.holding-book-info{padding:14px}.holding-book-meta{grid-template-columns:minmax(0,1fr)}.holding-dialog-actions{align-items:flex-start}.holding-dialog .holding-close-button{min-height:44px}}
+
+/* 피드백: 색상과 텍스트로 지도 상태를 함께 표시합니다. */
+.real-library-pin.unavailable>span,.real-library-pin.borrowed>span{background:#c82c24}
+.leaflet-tooltip.library-status-label{padding:6px 10px;border:1px solid #d1d5db;border-radius:7px;background:#fff;color:#4b5563;box-shadow:0 2px 7px #0003;font-family:inherit;font-size:12px;font-weight:700;line-height:1.5;text-align:center}
+.library-status-label strong,.library-status-label span{display:block}
+.library-status-label strong{font-size:11px;font-weight:500;color:#403b36}
+.leaflet-tooltip.library-status-label.available{border-color:#277d32;background:#f0faf1;color:#176425}
+.leaflet-tooltip.library-status-label.unavailable,.leaflet-tooltip.library-status-label.borrowed{border-color:#c82c24;background:#fff3f2;color:#b42318}
+.library-status-label.leaflet-tooltip-top:before{border-top-color:#9298a1}
+.library-status-label.available.leaflet-tooltip-top:before{border-top-color:#277d32}
+.library-status-label.unavailable.leaflet-tooltip-top:before,.library-status-label.borrowed.leaflet-tooltip-top:before{border-top-color:#c82c24}
+.holding-heading-actions{display:flex;align-items:center;justify-content:flex-end;gap:14px;margin-left:auto}
+.holding-dialog .holding-official-link{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:11px 16px;border:1px solid #704923;border-radius:7px;background:#704923;color:#fff;text-decoration:none;font-size:15px;font-weight:700;line-height:1.5;text-align:center}
+.holding-dialog .holding-official-link:hover{background:#59391d}
+.holding-dialog .holding-official-link:focus-visible{outline:3px solid #477340;outline-offset:3px}
+.holding-dialog-actions{justify-content:flex-end}
+@media(max-width:600px){.holding-dialog .dialog-heading{flex-wrap:wrap}.holding-heading-actions{flex:1 1 100%;gap:10px}.holding-dialog .holding-official-link{flex:1;font-size:14px}.holding-dialog .dialog-heading h2{flex:1}.leaflet-tooltip.library-status-label{font-size:12px;padding:5px 8px}}

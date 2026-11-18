@@ -150,8 +150,14 @@ function draw(panel,state) {
   for (const holding of state.holdings) {
     if (!hasMapPoint(holding)) continue;
     const point=[holding.latitude,holding.longitude]; points.push(point);
-    const marker=L.marker(point,{title:holding.name,icon:L.divIcon({className:`real-library-pin ${holding.status || 'unknown'}`,
-      html:`<span>${icon(holding.status==='available'?'check':'book',18)}</span>`,iconSize:[36,40],iconAnchor:[18,35],popupAnchor:[0,-28]})});
+    const status=holding.statusLoading ? 'loading' : holding.status || 'unknown';
+    const label={available:'대출 가능',unavailable:'대출 불가',borrowed:'대출 불가',loading:'확인 중',unknown:'상태 미확인'}[status] || '상태 미확인';
+    const symbol=status==='available' ? 'check' : ['unavailable','borrowed'].includes(status) ? 'cross' : status==='loading' ? 'clock' : 'book';
+    const marker=L.marker(point,{title:`${holding.name} · ${label} (정보나루 전날 기준)`,icon:L.divIcon({className:`real-library-pin ${status}`,
+      html:`<span>${icon(symbol,18)}</span>`,iconSize:[36,40],iconAnchor:[18,35],popupAnchor:[0,-28]})});
+    marker.bindTooltip(`<strong>${h(holding.name)}</strong><span>${h(label)}</span>`,{
+      permanent:true,direction:'top',offset:[0,-36],className:`library-status-label ${status}`,
+    });
     const homepage=webURL(holding.homepage);
     marker.bindPopup(`<section class="real-popup"><strong>${h(holding.name)}</strong>${holding.status?`<p>${h(statusText(holding))}</p>`:''}
       <p>${h(holding.neighborhood || '')}</p>${Number.isFinite(holding.distanceKm)?`<p>내 위치에서 ${distance(holding.distanceKm)} · 직선거리</p>`:''}
