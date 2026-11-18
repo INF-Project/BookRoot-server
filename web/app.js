@@ -1,6 +1,6 @@
 import { getDistricts, searchBooks } from './api.js?v=20261112-list-covers-1';
 import { CATALOG_SNAPSHOT_LABEL } from './config.js?v=20261112-catalog-2';
-import { connectMap, hasMapPoint, mapMarkup, refreshMap, renderMapPins, updateMapLocationDisplay } from './map.js?v=20261118-feedback-1';
+import { connectMap, hasMapPoint, mapMarkup, refreshMap, renderMapPins, updateMapLocationDisplay } from './map.js?v=20261118-feedback-2';
 import { distance, escapeHTML as h, icon, statusIcons, statusText, webURL } from './ui.js?v=20261113-ui-restore-1';
 import { officialBookLink } from './official-library.js?v=20261112-official-book-link-2';
 

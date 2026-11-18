@@ -154,9 +154,9 @@ function draw(panel,state) {
     const label={available:'대출 가능',unavailable:'대출 불가',borrowed:'대출 불가',loading:'확인 중',unknown:'상태 미확인'}[status] || '상태 미확인';
     const symbol=status==='available' ? 'check' : ['unavailable','borrowed'].includes(status) ? 'cross' : status==='loading' ? 'clock' : 'book';
     const marker=L.marker(point,{title:`${holding.name} · ${label} (정보나루 전날 기준)`,icon:L.divIcon({className:`real-library-pin ${status}`,
-      html:`<span>${icon(symbol,18)}</span>`,iconSize:[36,40],iconAnchor:[18,35],popupAnchor:[0,-28]})});
-    marker.bindTooltip(`<strong>${h(holding.name)}</strong><span>${h(label)}</span>`,{
-      permanent:true,direction:'top',offset:[0,-36],className:`library-status-label ${status}`,
+      html:`<span>${icon(symbol,14)}</span>`,iconSize:[28,32],iconAnchor:[14,28],popupAnchor:[0,-22]})});
+    marker.bindTooltip(`<strong>${h(holding.name)}</strong>`,{
+      permanent:true,direction:'top',offset:[0,-28],className:`library-status-label ${status}`,
     });
     const homepage=webURL(holding.homepage);
     marker.bindPopup(`<section class="real-popup"><strong>${h(holding.name)}</strong>${holding.status?`<p>${h(statusText(holding))}</p>`:''}
